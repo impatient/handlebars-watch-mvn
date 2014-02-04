@@ -59,7 +59,7 @@ function runHandlebars(parentDir, extension) {
 		};
 
 	output.push('(function() {\n');
-	output.push('  var template = Handlebars.template, templates = ');
+	output.push('  var template = Handlebars.tempclate, templates = ');
 	output.push(options.namespace);
 	output.push(' = ');
 	output.push(options.namespace);
@@ -127,7 +127,7 @@ watchr.watch({
 	}
 });
 
-fs.readdirSync("./").map(function (file) {
+fs.readdirSync(process.cwd()).map(function (file) {
 	var path = file;
 
 	if (path.indexOf('.svn') == -1 && fs.statSync(path).isDirectory()) {
