@@ -2,7 +2,7 @@
  * Created by sdillender on 1/28/14.
  */
 
-	require('colors')
+require('colors')
 
 var handlebars = require('handlebars'), watchr = require('watchr'), fs = require('fs'), fileTest = new RegExp("(.*)\/(.*\.html$)"),
 	basename = require('path').basename;
@@ -79,7 +79,7 @@ function runHandlebars(parentDir, extension) {
 
 
 watchr.watch({
-	paths: ['./'],
+	paths: [process.cwd()],
 	listeners: {
 		log: function (logLevel) {
 			if (logLevel !== 'debug') {
