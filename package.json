@@ -1,13 +1,12 @@
 {
 	"name": "handlebars-watch-mvn",
-	"version": "0.0.4",
+	"version": "0.0.5",
 	"repository" :
 	{ "type" : "git"
 		, "url" : "https://github.com/impatient/handlebars-watch-mvn"
 	},
 	"dependencies": {
 		"handlebars": "~1.3.0",
-		"watchr": ">=2.4.8",
 		"colors": ">=0.6.2"
 	},
 	"bin": { "handlebar-watch-mvn": "./handlebarWatcher.js"}

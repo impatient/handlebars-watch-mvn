@@ -5,7 +5,7 @@
 
 require('colors')
 
-var handlebars = require('handlebars'), watchr = require('watchr'), fs = require('fs'), fileTest = new RegExp("(.*)\/(.*\.html$)"),
+var handlebars = require('handlebars'), fs = require('fs'), fileTest = new RegExp("(.*)\/(.*\.html$)"),
 	basename = require('path').basename;
 
 
@@ -78,61 +78,52 @@ function runHandlebars(parentDir, extension) {
 
 }
 
+var onChange = function (base) {
 
-watchr.watch({
-	paths: [process.cwd()],
-	listeners: {
-		log: function (logLevel) {
-			if (logLevel !== 'debug') {
-				console.log('Log:', arguments);
-			}
-		},
-		error: function (err) {
-			if (err) {
-				console.log('An error occured:'.red, err);
-			}
-		},
-		watching: function (err, watcherInstance, isWatching) {
-			if (err) {
-				console.log("watching the path " + watcherInstance.path + " failed with error", err);
-			} else {
-				console.log("watching the path " + watcherInstance.path + " completed");
-			}
-		},
-		change: function (changeType, filePath, fileCurrentStat, filePreviousStat) {
-			//console.log('a change event occured:', changeType,filePath);
-			if (fileTest.test(filePath)) {
-				if (filePath.indexOf('.svn') == -1) {
+   return function (changeType, file) {
+       var filePath = base + '/' + file;
+    console.log('a change event occured:', changeType,filePath);
+    if (fileTest.test(filePath)) {
+        if (filePath.indexOf('.svn') == -1) {
 
-					var parent = fileTest.exec(filePath)[1];
-					console.log("Parent directory is ", parent);
-					fs.readdir(parent, function (err, files) {
+            var parent = fileTest.exec(filePath)[1];
+            console.log("Parent directory is ", parent);
+            fs.readdir(parent, function (err, files) {
 
-						runHandlebars(parent, "html");
+                runHandlebars(parent, "html");
 
-					});
+            });
 
-				}
+        }
 
 
-			}
-		}
-	},
-	next: function (err, watchers) {
-		if (err) {
-			return console.log("watching everything failed with error", err);
-		} else {
-			console.log('watching everything completed');//, watchers);
-		}
-	}
+    }
+}
+};
+
+var getDirs = function (path, memo) {
+
+    fs.readdirSync(path).map( function(file) {
+
+        if (file.indexOf('.svn') == -1 && fs.statSync(path + '/' + file).isDirectory()) {
+            memo.push(path + '/' + file);
+            getDirs(path + '/' + file,memo);
+        }
+
+    });
+
+
+    return memo;
+};
+
+var todo = getDirs(process.cwd(),[]);
+console.log(todo);
+
+todo.map(function(path) {
+
+    runHandlebars(path, "html");
+    fs.watch(path, {persistent:true}, onChange(path));
+
 });
 
-fs.readdirSync(process.cwd()).map(function (file) {
-	var path = file;
-
-	if (path.indexOf('.svn') == -1 && fs.statSync(path).isDirectory()) {
-		console.log("Matching path: " + path);
-		runHandlebars(path, "html");
-	}
-});
 
